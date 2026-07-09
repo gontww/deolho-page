@@ -306,7 +306,7 @@ deolho.api-url=http://localhost:8888/events`}
           Desenvolvido por <a href="http://www.gont.com.br" target="_blank" rel="noreferrer" className="text-zinc-300 hover:text-white transition">Augusto Gontijo</a>
         </div>
         <div>
-          DeOlho © 2026. Licenciado sob MIT.
+          DeOlho © 2026. Licenciado sob AGPL-3.0.
         </div>
       </footer>
     </div>
