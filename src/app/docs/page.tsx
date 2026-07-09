@@ -164,7 +164,6 @@ export default function DocsPage() {
                   Visão Geral
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">O que é o DeOlho?</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -200,27 +199,171 @@ export default function DocsPage() {
                   Funcionamento
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Arquitetura e Fluxo</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 3 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
-                O DeOlho é separado em duas partes fundamentais: o **Servidor (Painel de Gerenciamento)** e o **SDK Cliente (Logback/Spring Boot)**. O fluxo é totalmente assíncrono:
+                O DeOlho é separado em duas partes fundamentais: o <strong>Servidor (Painel de Gerenciamento)</strong> e o <strong>SDK Cliente (Logback/Spring Boot)</strong>. O fluxo é totalmente assíncrono:
               </p>
 
-              <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-                <h3 className="text-sm font-semibold text-white mb-4">Diagrama de Fluxo de Dados</h3>
-                <pre className="font-mono text-xs text-orange-300 overflow-x-auto whitespace-pre p-4 bg-zinc-950 rounded-lg">
-{`Aplicação Cliente (Java SDK) 
-  ↓ (Intercepção automática ou Logback Appender)
-  ↓ HTTP POST /events
-Servidor DeOlho (Recebe evento)
-  ↓
-QueueManager (Fila em Memória / Virtual Threads)
-  ├─→ PersistWorker ──→ SQLite Database (Salva Erro)
-  ├─→ AiWorker ──────→ Agnostic HTTP Calls ──→ OpenAI / Gemini / Claude (Gera Análise)
-  ├─→ NotifyWorker ──→ Webhook Trigger (Discord/Slack/Teams)
-  └─→ MetricsWorker ─→ Agrupa contadores de estatísticas`}
-                </pre>
+              <div className="bg-zinc-900/30 border border-zinc-900 rounded-2xl p-6 md:p-8 space-y-8 my-8 backdrop-blur-sm">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
+                  <svg className="w-5 h-5 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                  </svg>
+                  <span>Fluxo de Dados &amp; Arquitetura</span>
+                </h3>
+
+                <div className="flex flex-col items-center">
+                  
+                  {/* Card 1: Cliente */}
+                  <div className="w-full max-w-md bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-4 flex items-start gap-4 hover:border-zinc-700/80 transition shadow-lg">
+                    <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/20 text-orange-400 mt-0.5">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white text-sm">Aplicação Cliente</span>
+                        <span className="text-[10px] font-bold bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/20">Java SDK</span>
+                      </div>
+                      <p className="text-zinc-400 text-xs leading-relaxed">
+                        Intercepção automática de exceções via <code>@ControllerAdvice</code> ou custom log appender (Logback).
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Connector 1 */}
+                  <div className="w-0.5 h-16 bg-gradient-to-b from-orange-500/30 to-orange-500/80 relative my-1">
+                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 border border-zinc-800/80 px-2.5 py-1 rounded-full text-[10px] font-mono text-orange-400 shadow-xl select-none">
+                      HTTP POST /events
+                    </span>
+                  </div>
+
+                  {/* Card 2: Servidor */}
+                  <div className="w-full max-w-md bg-zinc-900/60 border border-orange-500/20 rounded-xl p-4 flex items-start gap-4 hover:border-orange-500/30 transition shadow-lg shadow-orange-500/[0.02]">
+                    <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/20 text-orange-400 mt-0.5">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M5 12a2 2 0 012-2h10a2 2 0 012 2m-14 0a2 2 0 002 2h10a2 2 0 002-2M7 8h10M7 16h10" />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white text-sm">Servidor DeOlho</span>
+                        <span className="text-[10px] font-bold bg-orange-500/10 text-orange-400 px-1.5 py-0.5 rounded border border-orange-500/20">Recebe evento</span>
+                      </div>
+                      <p className="text-zinc-400 text-xs leading-relaxed">
+                        Endpoint de recepção de eventos assíncronos. Valida chaves e encaminha ao gerenciador de filas.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Connector 2 */}
+                  <div className="w-0.5 h-16 bg-gradient-to-b from-orange-500/80 to-zinc-800 relative my-1">
+                    <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-950 border border-zinc-800/80 px-2.5 py-1 rounded-full text-[10px] font-semibold text-zinc-400 shadow-xl whitespace-nowrap">
+                      QueueManager
+                    </span>
+                  </div>
+
+                  {/* Card 3: QueueManager */}
+                  <div className="w-full max-w-md bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-4 flex items-start gap-4 hover:border-zinc-700/80 transition shadow-lg mb-8">
+                    <div className="p-2 bg-orange-500/10 rounded-lg border border-orange-500/20 text-orange-400 mt-0.5">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-white text-sm">Virtual Threads Queue</span>
+                        <span className="text-[10px] font-bold bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded border border-zinc-700/50">Java 21</span>
+                      </div>
+                      <p className="text-zinc-400 text-xs leading-relaxed">
+                        Fila interna concorrente que distribui os eventos sem bloquear o fluxo principal.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Workers branching header */}
+                  <div className="w-full flex items-center justify-between gap-4 mb-4">
+                    <div className="h-[1px] flex-1 bg-zinc-800"></div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Execução Assíncrona via Workers</span>
+                    <div className="h-[1px] flex-1 bg-zinc-800"></div>
+                  </div>
+
+                  {/* Workers Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                    
+                    {/* Worker 1: Persist */}
+                    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 space-y-3 hover:border-zinc-700/80 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                        <span className="font-semibold text-white text-xs">PersistWorker</span>
+                      </div>
+                      <p className="text-zinc-400 text-[11px] leading-relaxed">
+                        Salva ocorrências no banco SQLite local. Gerencia desduplicação se o mesmo erro for disparado sucessivamente.
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-blue-400 font-mono bg-blue-500/5 px-2 py-1 rounded border border-blue-500/10 w-fit">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+                        </svg>
+                        <span>SQLite Database</span>
+                      </div>
+                    </div>
+
+                    {/* Worker 2: AI */}
+                    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 space-y-3 hover:border-zinc-700/80 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                        <span className="font-semibold text-white text-xs">AiWorker</span>
+                      </div>
+                      <p className="text-zinc-400 text-[11px] leading-relaxed">
+                        Chama provedores externos de IA caso seja um erro novo, gerando análise de causa raiz, severidade e sugestão de correção.
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-purple-400 font-mono bg-purple-500/5 px-2 py-1 rounded border border-purple-500/10 w-fit">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <span>OpenAI / Gemini / Claude</span>
+                      </div>
+                    </div>
+
+                    {/* Worker 3: Notify */}
+                    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 space-y-3 hover:border-zinc-700/80 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                        <span className="font-semibold text-white text-xs">NotifyWorker</span>
+                      </div>
+                      <p className="text-zinc-400 text-[11px] leading-relaxed">
+                        Dispara webhooks HTTP instantâneos para notificar equipes de engenharia sobre exceções críticas.
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-green-400 font-mono bg-green-500/5 px-2 py-1 rounded border border-green-500/10 w-fit">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span>Discord / Slack Webhooks</span>
+                      </div>
+                    </div>
+
+                    {/* Worker 4: Metrics */}
+                    <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-xl p-4 space-y-3 hover:border-zinc-700/80 transition">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                        <span className="font-semibold text-white text-xs">MetricsWorker</span>
+                      </div>
+                      <p className="text-zinc-400 text-[11px] leading-relaxed">
+                        Agrupa dados estatísticos por hora e dia para alimentar gráficos de séries temporais do dashboard.
+                      </p>
+                      <div className="flex items-center gap-1.5 text-[10px] text-orange-400 font-mono bg-orange-500/5 px-2 py-1 rounded border border-orange-500/10 w-fit">
+                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <span>Estatísticas &amp; Timeline</span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -243,17 +386,39 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Deploy
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Subir o Servidor DeOlho</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 3 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
-                Você pode executar o servidor central do DeOlho utilizando Docker (recomendado para inicializar automaticamente com a máquina) ou rodar diretamente o arquivo JAR executável.
+                Você pode executar o servidor central do DeOlho utilizando <strong>Docker</strong> (construindo o container a partir do código-fonte) ou executar localmente via <strong>Maven / Java 21</strong>.
               </p>
 
+              {/* Opção A: Docker */}
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white">Opção A: Docker Compose (Recomendado)</h3>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/20">A</span>
+                  <span>Docker Compose (Recomendado)</span>
+                </h3>
                 <p className="text-zinc-300 text-sm">
-                  Crie um arquivo `docker-compose.yml` e defina as políticas de reinício para garantir que o serviço inicie junto ao sistema operacional:
+                  Se você clonou o repositório principal, navegue até a pasta <code>docker</code> e execute o comando abaixo. O Docker irá compilar a aplicação usando uma imagem de build do JDK e configurar o volume persistente de dados:
+                </p>
+
+                <div className="relative group">
+                  <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button 
+                      onClick={() => handleCopy("cd docker && docker compose up -d", "docker-run")}
+                      className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-2.5 py-1.5 rounded-lg border border-zinc-700 active:scale-95 transition"
+                    >
+                      {copiedId === "docker-run" ? "Copiado!" : "Copiar"}
+                    </button>
+                  </div>
+                  <pre className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
+{`cd docker
+docker compose up -d`}
+                  </pre>
+                </div>
+
+                <p className="text-zinc-300 text-sm">
+                  O arquivo <code>docker-compose.yml</code> utilizado realiza a construção automática e mapeia o banco SQLite no volume persistente:
                 </p>
 
                 <div className="relative group">
@@ -269,26 +434,41 @@ QueueManager (Fila em Memória / Virtual Threads)
                     {dockerComposeCode}
                   </pre>
                 </div>
-                <p className="text-zinc-400 text-xs">Execute o comando para subir em background: <code>docker compose up -d</code></p>
               </div>
 
+              {/* Opção B: Execução Manual */}
               <div className="space-y-4">
-                <h3 className="text-lg font-bold text-white">Opção B: Execução Manual (JAR)</h3>
+                <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                  <span className="flex items-center justify-center w-6 h-6 rounded-full bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/20">B</span>
+                  <span>Execução Local (Maven / Java 21)</span>
+                </h3>
+                
                 <p className="text-zinc-300 text-sm">
-                  Caso tenha o Java 21 instalado localmente, execute o JAR compilado da release diretamente:
+                  Para rodar o projeto localmente com Java 21 instalado, certifique-se de dar as devidas permissões ao wrapper e use o Spring Boot plugin para rodar diretamente:
                 </p>
-                <div className="relative group">
-                  <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button 
-                      onClick={() => handleCopy("java -jar deolho-0.1.0-SNAPSHOT.jar", "run-jar")}
-                      className="bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs px-2.5 py-1.5 rounded-lg border border-zinc-700 active:scale-95 transition"
-                    >
-                      {copiedId === "run-jar" ? "Copiado!" : "Copiar"}
-                    </button>
+
+                <div className="space-y-4">
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">No Linux / macOS:</h4>
+                    <pre className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
+{`chmod +x mvnw
+./mvnw spring-boot:run`}
+                    </pre>
                   </div>
-                  <pre className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
-                    {`java -jar deolho-0.1.0-SNAPSHOT.jar`}
-                  </pre>
+
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">No Windows (CMD):</h4>
+                    <pre className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
+{`mvnw.cmd spring-boot:run`}
+                    </pre>
+                  </div>
+
+                  <div>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500 mb-2">No Windows (PowerShell):</h4>
+                    <pre className="bg-zinc-900 border border-zinc-800 p-4 rounded-xl font-mono text-xs text-zinc-300 overflow-x-auto">
+{`.\\mvnw.cmd spring-boot:run`}
+                    </pre>
+                  </div>
                 </div>
               </div>
             </div>
@@ -302,7 +482,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Parâmetros
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Configurações Gerais</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -356,7 +535,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   SDK Setup
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Instalação do SDK Cliente</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -407,7 +585,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Autoconfig
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Captura Automática (Spring Boot)</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -446,7 +623,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Manual SDK
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Captura Manual de Erros</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -480,7 +656,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Appenders
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Configurar Logback Appender</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 2 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -514,7 +689,6 @@ QueueManager (Fila em Memória / Virtual Threads)
                   Modelos de IA
                 </div>
                 <h1 className="text-4xl font-extrabold tracking-tight text-white">Configurando Provedores de IA</h1>
-                <p className="text-zinc-400 text-sm">Tempo de leitura: 3 min</p>
               </div>
 
               <p className="text-zinc-300 leading-relaxed">
@@ -559,21 +733,25 @@ QueueManager (Fila em Memória / Virtual Threads)
   );
 }
 
-// Code snippets variables for clean syntax
-const dockerComposeCode = `version: '3.8'
-
-services:
-  deolho-server:
-    image: openjdk:21-slim
-    container_name: deolho-server
-    volumes:
-      - ./deolho.db:/app/deolho.db
-      - ./deolho-0.1.0-SNAPSHOT.jar:/app/deolho.jar
-    working_dir: /app
+const dockerComposeCode = `services:
+  deolho-app:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: deolho
     ports:
       - "8888:8888"
-    command: java -jar deolho.jar
-    restart: unless-stopped`;
+    environment:
+      - OPENAI_API_KEY=\${OPENAI_API_KEY:-}
+      - AI_ENABLED=\${AI_ENABLED:-false}
+      - NOTIFICATIONS_ENABLED=\${NOTIFICATIONS_ENABLED:-false}
+      - SPRING_DATASOURCE_URL=jdbc:sqlite:data/deolho.db
+    volumes:
+      - deolho-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  deolho-data:`;
 
 const mavenCode = `<dependency>
     <groupId>com.deolho</groupId>
