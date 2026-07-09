@@ -13,7 +13,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "DeOlho — Documentação Oficial",
+  title: "DeOlho",
   description: "Monitoramento de erros assíncrono e agnóstico com análise inteligente de IA para Java e Spring Boot.",
 };
 
